@@ -2,10 +2,12 @@
 
 namespace App\Models;
 
-// use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use App\Models\Cart;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 
 class User extends Authenticatable
 {
@@ -44,4 +46,15 @@ class User extends Authenticatable
             'password' => 'hashed',
         ];
     }
+
+    public function order_items(): HasMany
+    {
+        return $this->hasMany(OrderItems::class);
+    }
+
+    public function cart_items(): HasMany
+    {
+        return $this->hasMany(CartItems::class);
+    }
+
 }
