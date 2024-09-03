@@ -55,6 +55,9 @@ Databáze typ: SQLITE
 
 Po spuštění aplikace k ní můžete přistupovat ve webovém prohlížeči na adrese `http://not-hobby-market.test/`.
 
+Dále se můžete přihlásit jako ADMIN stránky, který může dodatečně vytvářet, mazat a upravovat produkty v prodeji.
+Přihlašovací e-mail: `user.admin@admin.cz`
+Přihlašovací hestlo: `ADMINpasswordADMIN`
 
 
 
@@ -113,6 +116,8 @@ Database type: SQLITE
 
 ## Usage
 
-Once the application is running, you can access it in a web browser at `http://not-hobby-market.test/`.
+Once the application runs, you can access it in a web browser at `http://not-hobby-market.test/`.
 
-Translated with DeepL.com (free version)
+You can also log in as the site's ADMIN, who can additionally create, delete, and edit products on sale.
+Login e-mail: `user.admin@admin.cz`
+Login password: `ADMINpasswordADMIN`
