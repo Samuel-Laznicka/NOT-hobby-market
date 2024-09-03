@@ -15,7 +15,7 @@
         
       <p class="text-sm text-green font-semibold mb-2 mx-2" style="text-align:right">{{ $product->price}},-<br></p>
 
-      <x-forms.form method="POST" action="#">
+      <x-forms.form method="POST" action="/cart">
         <input type="hidden" value="{{ $product->name }}" name="name">
         <input type="hidden" value="{{ $product->description }}" name="description">
         <input type="hidden" value="{{ $product->price }}"  name="price">

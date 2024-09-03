@@ -15,5 +15,7 @@
             @endforeach
         </div>
     </div>
+
+    <x-forms.pop-up />
   
   </x-page.layout>

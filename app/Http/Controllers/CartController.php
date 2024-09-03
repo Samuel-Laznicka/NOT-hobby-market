@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\CartItems;
 use Illuminate\Support\Str;
 use App\Models\OrderItems;
+use Illuminate\Contracts\Session\Session;
 use Illuminate\Http\Request;
 
 class CartController extends Controller
@@ -13,13 +14,14 @@ class CartController extends Controller
     {
         $totalQuantity = $this->countTotalQuantityCart();
         $totalPrice = $this->countTotalPriceCart();
-        $cartItems = CartItems::all();
+        $cartItems = CartItems::where('user_id', auth()->user()->id)->get();
+
         return view('cart', compact('cartItems', 'totalQuantity', 'totalPrice'));
     }
 
     private function countTotalQuantityCart() 
     {
-        $cartItems = CartItems::all();
+        $cartItems = CartItems::where('user_id', auth()->user()->id)->get();
         $totalQuantity = 0;
 
         foreach ($cartItems as $cartItem) {
@@ -31,7 +33,7 @@ class CartController extends Controller
 
     private function countTotalPriceCart() 
     {
-        $cartItems = CartItems::all();
+        $cartItems = CartItems::where('user_id', auth()->user()->id)->get();
         $totalPrice = 0;
 
         foreach ($cartItems as $cartItem) {
@@ -42,21 +44,34 @@ class CartController extends Controller
     }
 
     public function addToCart(Request $request)
-    {   
-        $cartItem = CartItems::create([
-            'name' => $request->name,
-            'description' => $request->description,
-            'price' => $request->price,
-            'quantity' => 1,
-        ]);
+    {
 
-        $subtotal = $cartItem->price * $cartItem->quantity;
+        $cartItem = CartItems::where('user_id', auth()->user()->id)
+            ->where('name', $request->name)
+            ->where('description', $request->description)
+            ->first();
 
-        $cartItem->subtotal = $subtotal;
-        $cartItem->save();
+        if ($cartItem) {
+            $cartItem->quantity += 1;
+            $cartItem->subtotal = $cartItem->price * $cartItem->quantity;
+            $cartItem->save();
+        } else {
 
+            $cartItem = CartItems::create([
+                'user_id' => auth()->user()->id,
+                'name' => $request->name,
+                'description' => $request->description,
+                'price' => $request->price,
+                'quantity' => 1,
+            ]);
 
-        return redirect('cart');
+            $cartItem->subtotal = $cartItem->price * $cartItem->quantity;
+            $cartItem->save();
+        }
+
+        session()->flash('message', 'Úspěšně přidáno do košíku!');
+
+        return redirect()->back();
     }
 
     public function incrementQuantity($cartItem)
@@ -70,7 +85,7 @@ class CartController extends Controller
         $item->subtotal = $subtotal; 
         $item->save();
 
-        return redirect('/cart');
+        return redirect('cart');
     }
 
     public function decrementQuantity($cartItem)
@@ -84,7 +99,7 @@ class CartController extends Controller
         $item->subtotal = $subtotal;
         $item->save();
 
-        return redirect('/cart');
+        return redirect('cart');
     }
 
     public function removeProduct(CartItems $cartItem)
@@ -98,7 +113,7 @@ class CartController extends Controller
     {
         CartItems::truncate();
 
-        return redirect('/cart');
+        return redirect('cart');
     }
     
     private function countTotalQuantityOrder($orderItemsGroup)
@@ -125,12 +140,13 @@ class CartController extends Controller
 
     public function buy()
     {
-        $cartItems = CartItems::all();
+        $cartItems = CartItems::where('user_id', auth()->user()->id)->get();
 
         $groupUniqueId = Str::uuid();
 
         foreach ($cartItems as $cartItem) {
             $orderItem = new OrderItems();
+            $orderItem->user_id = $cartItem->user_id;
             $orderItem->cart_id = $groupUniqueId;
             $orderItem->name = $cartItem->name;
             $orderItem->description = $cartItem->description;
@@ -143,12 +159,14 @@ class CartController extends Controller
 
         CartItems::truncate();
 
-        return redirect('/cart');
+        session()->flash('message', 'Děkujeme za Váš nákup! - Historii Vašich nákupů můžete najít ve Vašem profilu.');
+
+        return redirect('cart');
     }
 
     public function user()
     {
-        $orderItems = OrderItems::all();
+        $orderItems = OrderItems::where('user_id', auth()->user()->id)->get();
         $groupedOrderItems = $orderItems->groupBy('cart_id');
 
         $tableTotals = [];

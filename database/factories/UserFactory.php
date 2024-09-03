@@ -13,11 +13,13 @@ class UserFactory extends Factory
 
     public function definition(): array
     {
-        $admins =[
-            'name' => 'Admin',
-            'email' => 'user.admin@admin.cz',
-            'password' => 'ADMINpasswordADMIN',
-            'admin' => true,
+        $admins = [
+            [
+                'name' => 'Admin',
+                'email' => 'user.admin@admin.cz',
+                'password' => 'ADMINpasswordADMIN',
+                'admin' => true,
+            ],
         ];
 
         $admin = $this->faker->randomElement($admins);

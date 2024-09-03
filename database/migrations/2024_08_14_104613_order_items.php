@@ -10,6 +10,10 @@ return new class extends Migration
     {
         Schema::create('order_items', function (Blueprint $table) {
             $table->id();
+            $table->foreignId('user_id')
+                ->nullable()
+                ->constrained('users')
+                ->onDelete('cascade');
             $table->integer('cart_id')->nullable();
             $table->string('name');
             $table->string('description');
